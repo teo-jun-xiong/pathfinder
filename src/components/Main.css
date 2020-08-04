@@ -1,3 +1,12 @@
+.main {
+    text-align: center;
+}
+
 .grid {
-    margin: 100px 0 0;
+    margin: 50px 0 0;
+    text-align: center;
+}
+
+.btn {
+    margin: 10px;
 }

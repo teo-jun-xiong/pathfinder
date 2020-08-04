@@ -1,20 +1,23 @@
 import React, { Component } from "react";
 import Node from "./Node";
+import AlgorithmButton from "./AlgorithmButton";
+import Legend from "./Legend";
 import { dijkstra, getNodesInShortestPathOrder } from "../algorithms/dijkstra";
 
 import "./Main.css";
 
-var START_NODE_ROW = 10;
-var START_NODE_COL = 15;
-var FINISH_NODE_ROW = 10;
-var FINISH_NODE_COL = 35;
+var START_NODE_ROW = 7;
+var START_NODE_COL = 10;
+var FINISH_NODE_ROW = 7;
+var FINISH_NODE_COL = 20;
+const ALGO_DIJKSTRA = "dijkstra";
 
 // Returns initial grid with default start and finish nodes
 const getInitialGrid = () => {
   const grid = [];
-  for (let row = 0; row < 20; row++) {
+  for (let row = 0; row < 15; row++) {
     const currentRow = [];
-    for (let col = 0; col < 50; col++) {
+    for (let col = 0; col < 30; col++) {
       currentRow.push(createNode(col, row));
     }
     grid.push(currentRow);
@@ -97,6 +100,7 @@ export default class Main extends Component {
       mouseIsPressed: false,
       settingStart: false,
       settingFinish: false,
+      algo: "dijkstra",
     };
   }
 
@@ -174,21 +178,38 @@ export default class Main extends Component {
 
   // Resets all visited nodes to initial state (uncolored)
   resetAnimation(grid) {
-    console.log(grid.length);
-    console.log(grid[0].length);
-
     for (let i = 0; i < grid.length; i++) {
       for (let j = 0; j < grid[0].length; j++) {
+
+        // Resets the nodes 
+        grid[i][j].distance = Infinity;
+        grid[i][j].isVisited = false;
+        grid[i][j].previousNode = null;
+
         if (i === START_NODE_ROW && j === START_NODE_COL) {
           document.getElementById(`node-${i}-${j}`).className =
             "node node-start";
         } else if (i === FINISH_NODE_ROW && j === FINISH_NODE_COL) {
           document.getElementById(`node-${i}-${j}`).className =
             "node node-finish";
+        } else if (grid[i][j].isWall) {
+          document.getElementById(`node-${i}-${j}`).className =
+            "node node-wall";
         } else {
           document.getElementById(`node-${i}-${j}`).className = "node";
         }
       }
+    }
+  }
+
+  visualize() {
+    const algo = this.state.algo;
+
+    if (algo === ALGO_DIJKSTRA) {
+      this.visualizeDijkstra();
+    } else {
+      console.log(algo);
+      console.log("not implemented");
     }
   }
 
@@ -206,10 +227,17 @@ export default class Main extends Component {
     const { grid, mouseIsPressed } = this.state;
 
     return (
-      <>
-        <button onClick={() => this.visualizeDijkstra()}>
+      <div className="main">
+        <button className="btn btn-primary" onClick={() => this.visualize()}>
           Visualize Dijkstra's Algorithm
         </button>
+
+        <AlgorithmButton
+          parentCallback={(data) => this.setState({ algo: data })}
+        />
+
+        <Legend />
+
         <div className="grid">
           {grid.map((row, rowIdx) => {
             return (
@@ -237,7 +265,7 @@ export default class Main extends Component {
             );
           })}
         </div>
-      </>
+      </div>
     );
   }
 }
