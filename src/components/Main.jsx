@@ -173,22 +173,32 @@ export default class Main extends Component {
           }, 10 * i);
           return;
         }
-        setTimeout(() => {
-          const node = visitedNodesInOrder[i];
-          document.getElementById(`node-${node.row}-${node.col}`).className =
-            "node node-visited";
-        }, 10 * i);
+        if (
+          !visitedNodesInOrder[i].isStart &&
+          !visitedNodesInOrder[i].isFinish
+        ) {
+          setTimeout(() => {
+            const node = visitedNodesInOrder[i];
+            document.getElementById(`node-${node.row}-${node.col}`).className =
+              "node node-visited";
+          }, 10 * i);
+        }
       }
     }
   }
 
   animateShortestPath(nodesInShortestPathOrder) {
     for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
-      setTimeout(() => {
-        const node = nodesInShortestPathOrder[i];
-        document.getElementById(`node-${node.row}-${node.col}`).className =
-          "node node-shortest-path";
-      }, 50 * i);
+      if (
+        !nodesInShortestPathOrder[i].isStart &&
+        !nodesInShortestPathOrder[i].isFinish
+      ) {
+        setTimeout(() => {
+          const node = nodesInShortestPathOrder[i];
+          document.getElementById(`node-${node.row}-${node.col}`).className =
+            "node node-shortest-path";
+        }, 50 * i);
+      }
     }
   }
 
@@ -265,7 +275,7 @@ export default class Main extends Component {
         >
           Visualize
         </button>
-        
+
         <div id="snackbar">The end node cannot be reached!</div>
         <div className="grid">
           {grid.map((row, rowIdx) => {
