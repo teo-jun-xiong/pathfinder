@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import Node from "./Node";
 import start from "../images/start.png";
 import finish from "../images/finish.png";
+import visited from "../images/visited.png"
 import wall from "../images/wall.png";
 import path from "../images/path.png";
 import "./Legend.css"
@@ -21,6 +21,9 @@ export default class Legend extends Component {
                 <img src={finish} alt="finish"></img>
               </td>
               <td>
+                <img src={visited} alt="visited"></img>
+              </td>
+              <td>
                 <img src={wall} alt="wall"></img>
               </td>
               <td>
@@ -29,10 +32,11 @@ export default class Legend extends Component {
             </tr>
 
             <tr>
-                <td>Start</td>
-                <td>Finish</td>
-                <td>Wall</td>
-                <td>Path</td>
+                <td><span className="caption">Start</span></td>
+                <td><span className="caption">End</span></td>
+                <td><span className="caption">Visited</span></td>
+                <td><span className="caption">Wall</span></td>
+                <td><span className="caption">Path</span></td>
             </tr>
           </tbody>
         </table>

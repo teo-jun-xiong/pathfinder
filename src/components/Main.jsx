@@ -2,7 +2,11 @@ import React, { Component } from "react";
 import Node from "./Node";
 import AlgorithmButton from "./AlgorithmButton";
 import Legend from "./Legend";
-import { dijkstra, getNodesInShortestPathOrder } from "../algorithms/dijkstra";
+import {
+  dijkstra,
+  getNodesInShortestPathOrderDijkstra,
+} from "../algorithms/dijkstra";
+import { dfs, getNodesInShortestPathOrderDFS } from "../algorithms/dfs";
 
 import "./Main.css";
 
@@ -46,6 +50,8 @@ const getNewGridWithWallToggled = (grid, row, col) => {
   const newNode = {
     ...node,
     isWall: !node.isWall,
+    isStart: false,
+    isFinish: false,
   };
   newGrid[row][col] = newNode;
   return newGrid;
@@ -66,6 +72,7 @@ const getNewGridWithNewStart = (grid, row, col) => {
   const newStart = {
     ...node,
     isStart: true,
+    isWall: false,
   };
   newGrid[row][col] = newStart;
   return newGrid;
@@ -86,6 +93,7 @@ const getNewGridWithNewFinish = (grid, row, col) => {
   const newFinish = {
     ...node,
     isFinish: true,
+    isWall: false,
   };
   newGrid[row][col] = newFinish;
   return newGrid;
@@ -150,19 +158,27 @@ export default class Main extends Component {
     this.setState({ mouseIsPressed: false });
   }
 
-  animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder) {
-    for (let i = 0; i <= visitedNodesInOrder.length; i++) {
-      if (i === visitedNodesInOrder.length) {
+  animate(visitedNodesInOrder, nodesInShortestPathOrder) {
+    if (!visitedNodesInOrder) {
+      var snackbar = document.getElementById("snackbar");
+      snackbar.className = "show";
+      setTimeout(function () {
+        snackbar.className = snackbar.className.replace("show", "");
+      }, 3000);
+    } else {
+      for (let i = 0; i <= visitedNodesInOrder.length; i++) {
+        if (i === visitedNodesInOrder.length) {
+          setTimeout(() => {
+            this.animateShortestPath(nodesInShortestPathOrder);
+          }, 10 * i);
+          return;
+        }
         setTimeout(() => {
-          this.animateShortestPath(nodesInShortestPathOrder);
+          const node = visitedNodesInOrder[i];
+          document.getElementById(`node-${node.row}-${node.col}`).className =
+            "node node-visited";
         }, 10 * i);
-        return;
       }
-      setTimeout(() => {
-        const node = visitedNodesInOrder[i];
-        document.getElementById(`node-${node.row}-${node.col}`).className =
-          "node node-visited";
-      }, 10 * i);
     }
   }
 
@@ -180,8 +196,7 @@ export default class Main extends Component {
   resetAnimation(grid) {
     for (let i = 0; i < grid.length; i++) {
       for (let j = 0; j < grid[0].length; j++) {
-
-        // Resets the nodes 
+        // Resets the nodes
         grid[i][j].distance = Infinity;
         grid[i][j].isVisited = false;
         grid[i][j].previousNode = null;
@@ -208,9 +223,18 @@ export default class Main extends Component {
     if (algo === ALGO_DIJKSTRA) {
       this.visualizeDijkstra();
     } else {
-      console.log(algo);
-      console.log("not implemented");
+      this.visualizeDFS();
     }
+  }
+
+  visualizeDFS() {
+    const { grid } = this.state;
+    this.resetAnimation(grid);
+    const startNode = grid[START_NODE_ROW][START_NODE_COL];
+    const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
+    const visitedNodesInOrder = dfs(grid, startNode, finishNode);
+    const nodesInShortestPathOrder = getNodesInShortestPathOrderDFS(finishNode);
+    this.animate(visitedNodesInOrder, nodesInShortestPathOrder);
   }
 
   visualizeDijkstra() {
@@ -219,8 +243,10 @@ export default class Main extends Component {
     const startNode = grid[START_NODE_ROW][START_NODE_COL];
     const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
     const visitedNodesInOrder = dijkstra(grid, startNode, finishNode);
-    const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
-    this.animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
+    const nodesInShortestPathOrder = getNodesInShortestPathOrderDijkstra(
+      finishNode
+    );
+    this.animate(visitedNodesInOrder, nodesInShortestPathOrder);
   }
 
   render() {
@@ -228,16 +254,19 @@ export default class Main extends Component {
 
     return (
       <div className="main">
-        <button className="btn btn-primary" onClick={() => this.visualize()}>
-          Visualize Dijkstra's Algorithm
-        </button>
-
         <AlgorithmButton
           parentCallback={(data) => this.setState({ algo: data })}
         />
 
-        <Legend />
-
+        <button
+          id="visualize"
+          className="btn btn-primary"
+          onClick={() => this.visualize()}
+        >
+          Visualize
+        </button>
+        
+        <div id="snackbar">The end node cannot be reached!</div>
         <div className="grid">
           {grid.map((row, rowIdx) => {
             return (
@@ -265,6 +294,8 @@ export default class Main extends Component {
             );
           })}
         </div>
+
+        <Legend />
       </div>
     );
   }

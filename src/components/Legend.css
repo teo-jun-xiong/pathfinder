@@ -7,6 +7,10 @@
     margin: 0 auto;
 }
 
+.caption {
+    color: white;
+}
+
 img {
     width: 40px;
 }

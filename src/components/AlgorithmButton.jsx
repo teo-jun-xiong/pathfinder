@@ -16,9 +16,9 @@ export default class AlgorithmButton extends Component {
           </Dropdown.Item>
           <Dropdown.Item
             as="button"
-            onClick={() => this.props.parentCallback("bfs") }
+            onClick={() => this.props.parentCallback("dfs") }
           >
-            BFS
+            Depth First Search
           </Dropdown.Item>
         </DropdownButton>
       </div>
