@@ -34,7 +34,7 @@ export default class Legend extends Component {
             <tr>
                 <td><span className="caption">Start</span></td>
                 <td><span className="caption">End</span></td>
-                <td><span className="caption">Visited</span></td>
+                <td><span className="caption">{this.props.visited === 0 ? "Visited" : this.props.visited}</span></td>
                 <td><span className="caption">Wall</span></td>
                 <td><span className="caption">Path</span></td>
             </tr>

@@ -2,8 +2,8 @@
     width: 25px;
     height: 25px;
     outline: 1px solid #c9c9c9;
-    margin: 2px 4px;
     display: inline-block;
+    background-color: #1c1c1c;
 }
 
 .node-finish {

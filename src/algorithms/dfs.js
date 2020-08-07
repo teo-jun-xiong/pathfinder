@@ -23,7 +23,7 @@ export function dfs(grid, startNode, finishNode) {
 
     // If the closest node is at a distance of infinity,
     // we must be trapped and should therefore stop.
-    if (count >= 650 || currentNode.distance === Infinity) {
+    if (count >= 2500 || currentNode.distance === Infinity) {
       return visitedNodesInOrder;
     }
 

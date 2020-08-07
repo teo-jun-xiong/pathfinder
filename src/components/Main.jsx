@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import Node from "./Node";
 import AlgorithmButton from "./AlgorithmButton";
+import VisualizeButton from "./VisualizeButton";
 import Legend from "./Legend";
+
 import {
   dijkstra,
   getNodesInShortestPathOrderDijkstra,
@@ -10,18 +12,18 @@ import { dfs, getNodesInShortestPathOrderDFS } from "../algorithms/dfs";
 
 import "./Main.css";
 
-var START_NODE_ROW = 7;
-var START_NODE_COL = 10;
-var FINISH_NODE_ROW = 7;
-var FINISH_NODE_COL = 20;
+var START_NODE_ROW = 12;
+var START_NODE_COL = 25;
+var FINISH_NODE_ROW = 12;
+var FINISH_NODE_COL = 35;
 const ALGO_DIJKSTRA = "dijkstra";
 
 // Returns initial grid with default start and finish nodes
 const getInitialGrid = () => {
   const grid = [];
-  for (let row = 0; row < 15; row++) {
+  for (let row = 0; row < 25; row++) {
     const currentRow = [];
-    for (let col = 0; col < 30; col++) {
+    for (let col = 0; col < 60; col++) {
       currentRow.push(createNode(col, row));
     }
     grid.push(currentRow);
@@ -109,6 +111,7 @@ export default class Main extends Component {
       settingStart: false,
       settingFinish: false,
       algo: "dijkstra",
+      visited: 0,
     };
   }
 
@@ -159,33 +162,32 @@ export default class Main extends Component {
   }
 
   animate(visitedNodesInOrder, nodesInShortestPathOrder) {
-    if (!visitedNodesInOrder) {
-      var snackbar = document.getElementById("snackbar");
-      snackbar.className = "show";
-      setTimeout(function () {
-        snackbar.className = snackbar.className.replace("show", "");
-      }, 3000);
-    } else {
-      for (let i = 0; i <= visitedNodesInOrder.length; i++) {
-        if (i === visitedNodesInOrder.length) {
-          setTimeout(() => {
-            this.animateShortestPath(nodesInShortestPathOrder);
-          }, 10 * i);
-          return;
-        }
-        if (
-          !visitedNodesInOrder[i].isStart &&
-          !visitedNodesInOrder[i].isFinish
-        ) {
-          setTimeout(() => {
-            const node = visitedNodesInOrder[i];
-            document.getElementById(`node-${node.row}-${node.col}`).className =
-              "node node-visited";
-          }, 10 * i);
-        }
+    // if (!visitedNodesInOrder) {
+    //   var snackbar = document.getElementById("snackbar");
+    //   snackbar.className = "show";
+    //   setTimeout(function () {
+    //     snackbar.className = snackbar.className.replace("show", "");
+    //   }, 3000);
+    // } else {
+
+    for (let i = 0; i <= visitedNodesInOrder.length; i++) {
+      if (i === visitedNodesInOrder.length) {
+        setTimeout(() => {
+          this.animateShortestPath(nodesInShortestPathOrder);
+          this.setState({ visited: visitedNodesInOrder.length - 2 });
+        }, 10 * i);
+        return;
+      }
+      if (!visitedNodesInOrder[i].isStart && !visitedNodesInOrder[i].isFinish) {
+        setTimeout(() => {
+          const node = visitedNodesInOrder[i];
+          document.getElementById(`node-${node.row}-${node.col}`).className =
+            "node node-visited";
+        }, 10 * i);
       }
     }
   }
+  // }
 
   animateShortestPath(nodesInShortestPathOrder) {
     for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
@@ -229,7 +231,7 @@ export default class Main extends Component {
 
   visualize() {
     const algo = this.state.algo;
-
+    this.setState({ visited: 0 });
     if (algo === ALGO_DIJKSTRA) {
       this.visualizeDijkstra();
     } else {
@@ -268,19 +270,13 @@ export default class Main extends Component {
           parentCallback={(data) => this.setState({ algo: data })}
         />
 
-        <button
-          id="visualize"
-          className="btn btn-primary"
-          onClick={() => this.visualize()}
-        >
-          Visualize
-        </button>
+        <VisualizeButton onClickFunction={() => this.visualize()} />
 
-        <div id="snackbar">The end node cannot be reached!</div>
+        {/* <div id="snackbar">The end node cannot be reached!</div> */}
         <div className="grid">
           {grid.map((row, rowIdx) => {
             return (
-              <div key={rowIdx}>
+              <div className="grid-row" key={rowIdx}>
                 {row.map((node, nodeIdx) => {
                   const { row, col, isFinish, isStart, isWall } = node;
                   return (
@@ -305,7 +301,7 @@ export default class Main extends Component {
           })}
         </div>
 
-        <Legend />
+        <Legend visited={this.state.visited} />
       </div>
     );
   }

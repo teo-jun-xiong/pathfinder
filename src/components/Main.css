@@ -8,14 +8,18 @@
     text-align: center;
 }
 
+.grid-row {
+    height: 25px;
+}
+
 .btn {
     margin: 20px;
     margin-bottom: 0;
 }
 
 #visualize {
-    background-color: #3700B3;
-    border-color: #3700B3;
+    background-color: #303F9F;
+    border-color: #303F9F;
 }
 
 
